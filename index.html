@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Investment Checklist</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+</head>
+<body style="margin:0;padding:0;background:#0D1117;">
+  <div id="root"></div>
+  <script type="text/babel">
+
+const { useState } = React;
+
+const buyChecks = [
+  { id: "business", label: "Business Understanding", question: "Do I understand what this company does?", hint: "Describe the business model, revenue streams, and core products/services in your own words." },
+  { id: "moat", label: "Competitive Moat", question: "Do I understand the company's competitive moat?", hint: "Network effects, switching costs, cost advantages, intangible assets, or efficient scale?" },
+  { id: "attractions", label: "Investment Attractions", question: "Have I clearly identified the key investment attractions?", hint: "Growth catalysts, market opportunity, management quality, sector tailwinds." },
+  { id: "risks", label: "Risk Assessment", question: "Have I clearly identified and assessed the primary risks?", hint: "Regulatory, competitive, execution, macro, balance sheet, or ESG risks." },
+  { id: "financials", label: "Financial Health", question: "Consistent revenue growth, earnings growth, and profitability?", hint: "Review 3–5 year revenue CAGR, EPS trajectory, EBIT/EBITDA margins, and net income trend." },
+  { id: "debt", label: "Debt & Leverage", question: "Have I reviewed the debt position and leverage profile?", hint: "Net debt / EBITDA, debt maturity schedule, interest coverage, credit rating." },
+  { id: "capex", label: "CapEx & Cash Flow", question: "Have I assessed CapEx requirements and free cash flow dynamics?", hint: "CapEx as % of revenue, FCF conversion, maintenance vs growth CapEx, working capital trends." },
+  { id: "valuation", label: "Valuation", question: "Have I reviewed the valuation and is it attractive?", hint: "P/E ratio, EV/EBITDA, P/FCF — current levels vs historical range vs sector peers." },
+  { id: "price", label: "Price & Technicals", question: "Have I reviewed the stock price and recent movement?", hint: "Review 6-month and 12-month price chart. Is this a good entry point vs recent range?" },
+  { id: "ai", label: "AI & Broker Research", question: "Have I leveraged AI and broker consensus to stress-test the thesis?", hint: "Use AI to surface analyst views, consensus estimates, recent upgrades/downgrades, and contrarian perspectives." },
+  { id: "compliance", label: "HOOPP Compliance Approval", question: "Have I obtained compliance pre-approval from HOOPP?", hint: "Log the approval reference and date before placing any order." },
+  { id: "window", label: "Trading Window", question: "Is this within HOOPP's 30-day trading window?", hint: "Confirm the window is open and this trade does not fall within a blackout period." },
+];
+
+const sellChecks = [
+  { id: "reason", label: "Reason to Sell", question: "Do I have a clear and considered reason for selling?", hint: "Thesis broken, target price reached, better opportunity, rebalancing, or liquidity need?" },
+  { id: "peak", label: "Valuation Peak", question: "Is the valuation currently at a high or peak level?", hint: "Is the stock trading at a premium vs its own history and sector peers?" },
+  { id: "pe", label: "P/E vs History", question: "Have I compared the current P/E ratio to historic P/E ratios?", hint: "Is the multiple stretched relative to 3–5 year averages? Is mean reversion likely?" },
+  { id: "conviction", label: "Conviction Check", question: "Do I still have conviction in this name?", hint: "If YES — pause and reconsider selling. If NO — proceed with discipline." },
+  { id: "compliance", label: "HOOPP Compliance Approval", question: "Have I obtained compliance pre-approval from HOOPP?", hint: "Log the approval reference and date before placing any order." },
+  { id: "window", label: "Trading Window", question: "Is this within HOOPP's 30-day trading window?", hint: "Confirm the window is open and this trade does not fall within a blackout period." },
+];
+
+const buyColors = { business: "#4A90D9", moat: "#4A90D9", attractions: "#7B68EE", risks: "#E8834A", financials: "#5BAD6F", debt: "#5BAD6F", capex: "#5BAD6F", valuation: "#D4A843", price: "#D4A843", ai: "#9B6EBF", compliance: "#C0392B", window: "#C0392B" };
+const sellColors = { reason: "#E8834A", peak: "#D4A843", pe: "#D4A843", conviction: "#7B68EE", compliance: "#C0392B", window: "#C0392B" };
+
+function Checklist({ checks, colors, accentPrimary, label }) {
+  const [ticker, setTicker] = useState("");
+  const [answers, setAnswers] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const setAnswer = (id, val) => { setAnswers((p) => ({ ...p, [id]: val })); setSubmitted(false); };
+  const completed = checks.filter((c) => answers[c.id] !== undefined).length;
+  const pct = Math.round((completed / checks.length) * 100);
+  const blockers = checks.filter((c) => ["compliance", "window"].includes(c.id) && answers[c.id] === false);
+  const convictionWarning = label === "SELL" && answers["conviction"] === true;
+  const canSubmit = pct === 100 && blockers.length === 0 && !convictionWarning;
+  const reset = () => { setTicker(""); setAnswers({}); setSubmitted(false); };
+
+  return (
+    <div>
+      <div style={{ background: "#161B22", border: "1px solid #21262D", borderRadius: 8, padding: "20px 24px", marginBottom: 24, display: "flex", alignItems: "center", gap: 16 }}>
+        <div>
+          <div style={{ fontFamily: "system-ui, sans-serif", fontSize: 11, letterSpacing: 2, color: "#8B949E", textTransform: "uppercase", marginBottom: 6 }}>Ticker / Company</div>
+          <input value={ticker} onChange={(e) => setTicker(e.target.value.toUpperCase())} placeholder="e.g. AAPL"
+            style={{ background: "#0D1117", border: "1px solid #30363D", borderRadius: 6, padding: "8px 14px", fontSize: 18, fontFamily: "monospace", color: "#F0F6FC", width: 180, letterSpacing: 2, outline: "none" }} />
+        </div>
+        <div style={{ marginLeft: "auto", textAlign: "center" }}>
+          <svg width={64} height={64} viewBox="0 0 64 64">
+            <circle cx={32} cy={32} r={28} fill="none" stroke="#21262D" strokeWidth={5} />
+            <circle cx={32} cy={32} r={28} fill="none" stroke={accentPrimary} strokeWidth={5}
+              strokeDasharray={`${(pct / 100) * 175.9} 175.9`} strokeLinecap="round" transform="rotate(-90 32 32)"
+              style={{ transition: "stroke-dasharray 0.3s ease" }} />
+            <text x={32} y={37} textAnchor="middle" fontSize={14} fill="#F0F6FC" fontFamily="system-ui, sans-serif" fontWeight={600}>{pct}%</text>
+          </svg>
+          <div style={{ fontFamily: "system-ui, sans-serif", fontSize: 11, color: "#8B949E", marginTop: 2 }}>{completed}/{checks.length}</div>
+        </div>
+      </div>
+
+      {blockers.length > 0 && (
+        <div style={{ background: "#2D0F0F", border: "1px solid #C0392B", borderRadius: 8, padding: "14px 20px", marginBottom: 16, display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{ fontSize: 18 }}>⛔</span>
+          <div style={{ fontFamily: "system-ui, sans-serif", fontSize: 13, color: "#FF7B7B" }}>
+            <strong>Trade blocked.</strong> You have answered NO to a mandatory compliance or trading window check. Do not proceed.
+          </div>
+        </div>
+      )}
+      {convictionWarning && (
+        <div style={{ background: "#1E1B2E", border: "1px solid #7B68EE", borderRadius: 8, padding: "14px 20px", marginBottom: 16, display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{ fontSize: 18 }}>⚠️</span>
+          <div style={{ fontFamily: "system-ui, sans-serif", fontSize: 13, color: "#B8AAFF" }}>
+            <strong>Pause and reconsider.</strong> You still have conviction in this name. Are you sure you want to sell?
+          </div>
+        </div>
+      )}
+
+      {checks.map((check, i) => {
+        const answered = answers[check.id] !== undefined;
+        const accentColor = colors[check.id];
+        return (
+          <div key={check.id} style={{ background: answered ? "#161B22" : "#13181F", border: "1px solid #21262D", borderLeft: `3px solid ${answered ? accentColor : "#30363D"}`, borderRadius: 8, marginBottom: 12, transition: "all 0.2s ease" }}>
+            <div style={{ padding: "18px 22px" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+                <div style={{ minWidth: 28, height: 28, borderRadius: "50%", background: answered ? accentColor : "#21262D", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "monospace", fontSize: 12, fontWeight: 700, color: answered ? "#0D1117" : "#8B949E", transition: "all 0.2s", marginTop: 1 }}>
+                  {answered ? "✓" : i + 1}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontFamily: "system-ui, sans-serif", fontSize: 10, letterSpacing: 2, color: accentColor, textTransform: "uppercase", marginBottom: 4, fontWeight: 600 }}>{check.label}</div>
+                  <div style={{ fontSize: 15, color: "#E6EDF3", marginBottom: 6, lineHeight: 1.4 }}>{check.question}</div>
+                  <div style={{ fontSize: 12, color: "#8B949E", fontFamily: "system-ui, sans-serif", fontStyle: "italic", marginBottom: 14, lineHeight: 1.5 }}>{check.hint}</div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {[true, false].map((val) => (
+                      <button key={String(val)} onClick={() => setAnswer(check.id, val)}
+                        style={{ padding: "6px 22px", borderRadius: 6, fontSize: 13, fontFamily: "system-ui, sans-serif", fontWeight: 600, cursor: "pointer", border: "1px solid", background: answers[check.id] === val ? (val ? "#1C3829" : "#2D0F0F") : "transparent", borderColor: answers[check.id] === val ? (val ? "#2EA043" : "#C0392B") : "#30363D", color: answers[check.id] === val ? (val ? "#3FB950" : "#FF7B7B") : "#8B949E", transition: "all 0.15s" }}>
+                        {val ? "YES" : "NO"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+
+      <div style={{ marginTop: 28, display: "flex", gap: 12, alignItems: "center" }}>
+        {!submitted ? (
+          <button disabled={!canSubmit} onClick={() => setSubmitted(true)}
+            style={{ padding: "12px 32px", borderRadius: 8, fontSize: 14, fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: 1, cursor: canSubmit ? "pointer" : "not-allowed", background: canSubmit ? accentPrimary : "#21262D", border: "none", color: canSubmit ? "#fff" : "#4A5568", transition: "all 0.2s" }}>
+            CONFIRM CHECKLIST COMPLETE
+          </button>
+        ) : (
+          <div style={{ background: label === "BUY" ? "#1C3829" : "#2A1A0A", border: `1px solid ${accentPrimary}`, borderRadius: 8, padding: "12px 24px", fontFamily: "system-ui, sans-serif", fontSize: 14, color: accentPrimary, fontWeight: 600, display: "flex", alignItems: "center", gap: 8 }}>
+            ✓ {label} checklist complete for {ticker || "this position"} — cleared to proceed.
+          </div>
+        )}
+        <button onClick={reset} style={{ padding: "12px 20px", borderRadius: 8, fontSize: 13, fontFamily: "system-ui, sans-serif", cursor: "pointer", background: "transparent", border: "1px solid #30363D", color: "#8B949E" }}>Reset</button>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [mode, setMode] = useState("BUY");
+  return (
+    <div style={{ fontFamily: "Georgia, serif", background: "#0D1117", minHeight: "100vh", padding: "0 0 60px 0", color: "#E6EDF3" }}>
+      <div style={{ background: "linear-gradient(135deg, #141B25 0%, #0D1117 100%)", borderBottom: "1px solid #21262D", padding: "32px 40px 28px" }}>
+        <div style={{ maxWidth: 780, margin: "0 auto" }}>
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontFamily: "monospace", fontSize: 11, letterSpacing: 3, color: "#8B949E", textTransform: "uppercase", marginBottom: 6 }}>Pre-Trade Checklist</div>
+            <h1 style={{ margin: 0, fontSize: 26, fontWeight: 400, letterSpacing: "-0.5px", color: "#F0F6FC" }}>Personal Investment Checklist</h1>
+          </div>
+          <div style={{ display: "inline-flex", background: "#161B22", border: "1px solid #21262D", borderRadius: 8, padding: 4, gap: 4 }}>
+            {["BUY", "SELL"].map((m) => {
+              const active = mode === m;
+              const color = m === "BUY" ? "#58A6FF" : "#E8834A";
+              return (
+                <button key={m} onClick={() => setMode(m)}
+                  style={{ padding: "8px 32px", borderRadius: 6, fontSize: 13, fontFamily: "system-ui, sans-serif", fontWeight: 700, letterSpacing: 2, cursor: "pointer", border: "none", transition: "all 0.2s", background: active ? (m === "BUY" ? "#0D2137" : "#2A1A0A") : "transparent", color: active ? color : "#4A5568", boxShadow: active ? `0 0 0 1px ${color}40` : "none" }}>
+                  {m === "BUY" ? "▲ BUY" : "▼ SELL"}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      <div style={{ maxWidth: 780, margin: "0 auto", padding: "32px 40px 0" }}>
+        {mode === "BUY"
+          ? <Checklist key="buy" checks={buyChecks} colors={buyColors} accentPrimary="#58A6FF" label="BUY" />
+          : <Checklist key="sell" checks={sellChecks} colors={sellColors} accentPrimary="#E8834A" label="SELL" />
+        }
+        <div style={{ marginTop: 32, borderTop: "1px solid #21262D", paddingTop: 20, fontFamily: "system-ui, sans-serif", fontSize: 11, color: "#4A5568", textAlign: "center", letterSpacing: 1 }}>
+          HOOPP PERSONAL TRADING POLICY — v1.0
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+  </script>
+</body>
+</html>
