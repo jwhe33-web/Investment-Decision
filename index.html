@@ -15,27 +15,27 @@
 const { useState } = React;
 
 const buyChecks = [
-  { id: "business", label: "Business Understanding", question: "Do I understand what this company does?", hint: "Describe the business model, revenue streams, and core products/services in your own words." },
-  { id: "moat", label: "Competitive Moat", question: "Do I understand the company's competitive moat?", hint: "Network effects, switching costs, cost advantages, intangible assets, or efficient scale?" },
+  { id: "business", label: "Business Understanding", question: "Do I clearly understand what this company does?", hint: "Describe the business model, revenue streams, and core products/services in your own words." },
+  { id: "moat", label: "Competitive Moat", question: "Does the company have a competitive moat?", hint: "Network effects, switching costs, cost advantages, intangible assets, or efficient scale?" },
   { id: "attractions", label: "Investment Attractions", question: "Have I clearly identified the key investment attractions?", hint: "Growth catalysts, market opportunity, management quality, sector tailwinds." },
   { id: "risks", label: "Risk Assessment", question: "Have I clearly identified and assessed the primary risks?", hint: "Regulatory, competitive, execution, macro, balance sheet, or ESG risks." },
-  { id: "financials", label: "Financial Health", question: "Consistent revenue growth, earnings growth, and profitability?", hint: "Review 3–5 year revenue CAGR, EPS trajectory, EBIT/EBITDA margins, and net income trend." },
-  { id: "debt", label: "Debt & Leverage", question: "Have I reviewed the debt position and leverage profile?", hint: "Net debt / EBITDA, debt maturity schedule, interest coverage, credit rating." },
-  { id: "capex", label: "CapEx & Cash Flow", question: "Have I assessed CapEx requirements and free cash flow dynamics?", hint: "CapEx as % of revenue, FCF conversion, maintenance vs growth CapEx, working capital trends." },
-  { id: "valuation", label: "Valuation", question: "Have I reviewed the valuation and is it attractive?", hint: "P/E ratio, EV/EBITDA, P/FCF — current levels vs historical range vs sector peers." },
-  { id: "price", label: "Price & Technicals", question: "Have I reviewed the stock price and recent movement?", hint: "Review 6-month and 12-month price chart. Is this a good entry point vs recent range?" },
+  { id: "financials", label: "Financial Health", question: "Are revenue growth, earnings growth, and profitability consistent and healthy?", hint: "Review 3–5 year revenue CAGR, EPS trajectory, EBIT/EBITDA margins, and net income trend." },
+  { id: "debt", label: "Debt & Leverage", question: "Are the debt position and leverage profile healthy?", hint: "Net debt / EBITDA, debt maturity schedule, interest coverage, credit rating." },
+  { id: "capex", label: "CapEx & Cash Flow", question: "Are CapEx requirements and free cash flow dynamics healthy?", hint: "CapEx as % of revenue, FCF conversion, maintenance vs growth CapEx, working capital trends, retained earnings." },
+  { id: "valuation", label: "Valuation", question: "Is the current valuation attractive?", hint: "P/E ratio, EV/EBITDA, P/FCF — current levels vs historical range vs sector peers." },
+  { id: "price", label: "Price & Technicals", question: "Is the stock price at an attractive entry point versus historic levels?", hint: "Review 6-month, 12-month, and 5 year price chart. Is this a good entry point vs recent range?" },
   { id: "ai", label: "AI & Broker Research", question: "Have I leveraged AI and broker consensus to stress-test the thesis?", hint: "Use AI to surface analyst views, consensus estimates, recent upgrades/downgrades, and contrarian perspectives." },
-  { id: "compliance", label: "HOOPP Compliance Approval", question: "Have I obtained compliance pre-approval from HOOPP?", hint: "Log the approval reference and date before placing any order." },
-  { id: "window", label: "Trading Window", question: "Is this within HOOPP's 30-day trading window?", hint: "Confirm the window is open and this trade does not fall within a blackout period." },
+  { id: "compliance", label: "HOOPP Compliance Approval", question: "Have I obtained ComplySci pre-approval from HOOPP?", hint: "Log the approval request and date before placing any order." },
+  { id: "window", label: "Trading Window", question: "Is this within HOOPP's 30-day trading window?", hint: "Confirm the window is open and this trade does not fall within a no-trade period." },
 ];
 
 const sellChecks = [
   { id: "reason", label: "Reason to Sell", question: "Do I have a clear and considered reason for selling?", hint: "Thesis broken, target price reached, better opportunity, rebalancing, or liquidity need?" },
-  { id: "peak", label: "Valuation Peak", question: "Is the valuation currently at a high or peak level?", hint: "Is the stock trading at a premium vs its own history and sector peers?" },
+  { id: "peak", label: "Valuation Peak", question: "Is the valuation currently at an attractive selling level?", hint: "Is the stock trading at a premium vs its own history and sector peers?" },
   { id: "pe", label: "P/E vs History", question: "Have I compared the current P/E ratio to historic P/E ratios?", hint: "Is the multiple stretched relative to 3–5 year averages? Is mean reversion likely?" },
-  { id: "conviction", label: "Conviction Check", question: "Do I still have conviction in this name?", hint: "If YES — pause and reconsider selling. If NO — proceed with discipline." },
-  { id: "compliance", label: "HOOPP Compliance Approval", question: "Have I obtained compliance pre-approval from HOOPP?", hint: "Log the approval reference and date before placing any order." },
-  { id: "window", label: "Trading Window", question: "Is this within HOOPP's 30-day trading window?", hint: "Confirm the window is open and this trade does not fall within a blackout period." },
+  { id: "conviction", label: "Conviction Check", question: "Do I still have conviction in this name?", hint: "If YES — keep on watchlist and buy again when price is lower." },
+  { id: "compliance", label: "HOOPP Compliance Approval", question: "Have I obtained ComplySci pre-approval from HOOPP?", hint: "Log the approval request and date before placing any order." },
+  { id: "window", label: "Trading Window", question: "Is this within HOOPP's 30-day trading window?", hint: "Confirm the window is open and this trade does not fall within a no-trade period." },
 ];
 
 const buyColors = { business: "#4A90D9", moat: "#4A90D9", attractions: "#7B68EE", risks: "#E8834A", financials: "#5BAD6F", debt: "#5BAD6F", capex: "#5BAD6F", valuation: "#D4A843", price: "#D4A843", ai: "#9B6EBF", compliance: "#C0392B", window: "#C0392B" };
